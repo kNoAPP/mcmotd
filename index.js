@@ -1,9 +1,10 @@
 const { Client, MessageEmbed, MessageAttachment } = require('discord.js');
+const MongoClient = require('mongodb').MongoClient;
 const net = require('net');
 const { PacketOutUtil, PacketInUtil } = require('./util/NetworkUtil');
+const { token, mongoURI } = require('./config.json');
 
 const client = new Client();
-const { token } = require('./config.json');
 
 function pingServer(host, port, protocol, timeout) {
     return new Promise((resolve, reject) => {
@@ -45,8 +46,21 @@ function pingServer(host, port, protocol, timeout) {
                 return;
             }
 
-            const rawJsonResponse = response.readString();
-            resolve(JSON.parse(rawJsonResponse));
+            const jsonResponse = JSON.parse(response.readString());
+            jsonResponse.ip = host.toLowerCase() + ":" + port;
+            resolve(jsonResponse);
+            MongoClient.connect(mongoURI, { useUnifiedTopology: true }, (err, db) => {
+               if(err)
+                   throw err;
+
+               const dbo = db.db('discord-bot');
+               dbo.collection('pings').replaceOne({ ip: jsonResponse.ip }, jsonResponse, { upsert: true }, (err, result) => {
+                    if(err)
+                        throw err;
+
+                    db.close();
+               });
+            });
         });
 
         socket.on('error', (error) => {

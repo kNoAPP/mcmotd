@@ -17,13 +17,7 @@ const questions = [
         type: 'input',
         name: 'mongoURI',
         message: 'MongoDB Auth URI:',
-        default: 'mongodb:username:password@localhost:27107/mydatabasename',
-        validate: (input) => new Promise((resolve, reject) => {
-            if(input.match(/^(mongodb:(?:\/{2})?)((\w+?):(\w+?)@|:?@?)(\w+?):(\d+)\/(\w+?)$/g))
-                resolve(true);
-            else
-                reject('This is not a valid MongoDB URI!');
-        })
+        default: 'mongodb://username:password@localhost:27107/mydatabasename'
     }
 ];
 
@@ -33,6 +27,6 @@ prompt(questions).then(answers => {
        if(err)
            return console.log("Failed to generate config.json: ");
 
-       console.log("Success! You're all set to run Sage.")
+       console.log("Success! You're all set to run mcmotd.")
    });
 });
