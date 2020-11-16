@@ -11,5 +11,5 @@ The response includes the favicon, ip, player count, description, color scheme, 
 2. Navigate to the project folder, open a shell
 3. Install the node_modules with with: `npm install`
 4. Get your MongoDB URI and Discord token info ready.
-5. Input this information in the setup script: `npm setup`
+5. Input this information in the setup script: `npm setup` (Note, if you don't want to use MongoDB, leave the URI field blank)
 6. Add the Discord bot to a server and type !ping <domain/ip> (ex. !ping mcdiamondfire.com)
