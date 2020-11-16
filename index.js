@@ -49,18 +49,20 @@ function pingServer(host, port, protocol, timeout) {
             const jsonResponse = JSON.parse(response.readString());
             jsonResponse.ip = host.toLowerCase() + ":" + port;
             resolve(jsonResponse);
-            MongoClient.connect(mongoURI, { useUnifiedTopology: true }, (err, db) => {
-               if(err)
-                   throw err;
-
-               const dbo = db.db('discord-bot');
-               dbo.collection('pings').replaceOne({ ip: jsonResponse.ip }, jsonResponse, { upsert: true }, (err, result) => {
+            if(mongoURI) {
+                MongoClient.connect(mongoURI, { useUnifiedTopology: true }, (err, db) => {
                     if(err)
                         throw err;
 
-                    db.close();
-               });
-            });
+                    const dbo = db.db('discord-bot');
+                    dbo.collection('pings').replaceOne({ ip: jsonResponse.ip }, jsonResponse, { upsert: true }, (err, result) => {
+                        if(err)
+                            throw err;
+
+                        db.close();
+                    });
+                });
+            }
         });
 
         socket.on('error', (error) => {
