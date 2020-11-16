@@ -4,7 +4,7 @@
   "description": "A server list bot written in Discord.js.",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
+    "start": "node .",
     "setup": "node setup",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
