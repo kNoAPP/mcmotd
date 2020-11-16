@@ -49,7 +49,7 @@ function pingServer(host, port, protocol, timeout) {
             const jsonResponse = JSON.parse(response.readString());
             jsonResponse.ip = host.toLowerCase() + ":" + port;
             resolve(jsonResponse);
-            if(mongoURI) {
+            if(mongoURI && mongoURI.length > 0) {
                 MongoClient.connect(mongoURI, { useUnifiedTopology: true }, (err, db) => {
                     if(err)
                         throw err;
