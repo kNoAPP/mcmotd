@@ -3,8 +3,8 @@ A Discord bot written in NodeJS. This bot can be used to run !ping <domain/ip> i
 The response includes the favicon, ip, player count, description, color scheme, version, and timestamp.
 
 # Dependencies
-- NodeJS
-- npm
+- NodeJS (12+)
+- npm (6+)
 
 # Setup
 1. Clone the repo with: `git clone https://github.com/kNoAPP/mcmotd.git`
