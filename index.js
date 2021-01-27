@@ -8,6 +8,7 @@ const client = new Client();
 
 function pingServer(host, port, protocol, timeout) {
     return new Promise((resolve, reject) => {
+        let connectTime;
         const socket = new net.createConnection({host: host, port: port});
         socket.setNoDelay(true);
 
@@ -28,6 +29,8 @@ function pingServer(host, port, protocol, timeout) {
             const request = new PacketOutUtil(); // Then the request packet
             request.writeVarInt(0);
             socket.write(request.build());
+
+            connectTime = new Date();
         });
 
         const response = new PacketInUtil();
@@ -40,6 +43,8 @@ function pingServer(host, port, protocol, timeout) {
             clearTimeout(timeoutHandler);
             socket.destroy();
 
+            const latency = Math.floor((new Date() - connectTime) / 2);
+
             const packetId = response.readVarInt();
             if(packetId !== 0) { // Handshake should be 0.
                 reject(new Error("Invalid packet id sent: " + packetId));
@@ -48,7 +53,10 @@ function pingServer(host, port, protocol, timeout) {
 
             const jsonResponse = JSON.parse(response.readString());
             jsonResponse.ip = host.toLowerCase() + ":" + port;
+            jsonResponse.latency = latency;
             resolve(jsonResponse);
+
+            // Mongo Logging
             if(mongoURI && mongoURI.length > 0) {
                 MongoClient.connect(mongoURI, { useUnifiedTopology: true }, (err, db) => {
                     if(err)
@@ -105,7 +113,7 @@ client.on('message', message => {
                 embed.setURL(`https://${ip}`);
                 embed.setTitle(ip);
                 embed.setAuthor(`${result.players.online} / ${result.players.max}`)
-                embed.setFooter(result.version.name);
+                embed.setFooter(result.version.name + " • " + result.latency + "ms");
 
                 const colorCodeCleaner = /§./g;
                 let color = null;
